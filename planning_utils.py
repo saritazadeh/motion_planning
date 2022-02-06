@@ -100,7 +100,14 @@ def valid_actions(grid, current_node):
         valid_actions.remove(Action.WEST)
     if y + 1 > m or grid[x, y + 1] == 1:
         valid_actions.remove(Action.EAST)
-
+    if y + 1 > m or grid[x - 1, y + 1] == 1:
+        valid_actions.remove(Action.NEDIAG)
+    if y + 1 > m or grid[x - 1, y - 1] == 1:
+        valid_actions.remove(Action.NWDIAG)
+    if y + 1 > m or grid[x + 1, y + 1] == 1:
+        valid_actions.remove(Action.SEDIAG)
+    if y + 1 > m or grid[x + 1, y - 1] == 1:
+        valid_actions.remove(Action.SWDIAG)
     return valid_actions
 
 

@@ -89,8 +89,6 @@ class MotionPlanning(Drone):
     def waypoint_transition(self):
         self.flight_state = States.WAYPOINT
         print("waypoint transition")
-        self.plan_path()
-        print(self.waypoints)
         self.target_position = self.waypoints.pop(0)
         print('target position', self.target_position)
         self.cmd_position(self.target_position[0], self.target_position[1], self.target_position[2], self.target_position[3])
@@ -134,13 +132,14 @@ class MotionPlanning(Drone):
 	
         # DONE: set home position to (lon0, lat0, 0)
         self.set_home_position(lon0, lat0, 0)
-        global_home = [lon0, lat0, 0]
-
+        #global_home = [lon0, lat0, 0]
+        print("global home", self.global_home)
+        
         # DONE: retrieve current global position
         global_position = [self.global_position[0], self.global_position[1], self.global_position[2]]
         
         # DONE: convert to current local position using global_to_local()
-        local_position = global_to_local(global_position, global_home)
+        local_position = global_to_local(global_position, self.global_home)
         #print('global home {0}, position {1}, local position {2}'.format(self.global_home, self.global_position, self.local_position)) 
         
         # Read in obstacle map
@@ -154,27 +153,21 @@ class MotionPlanning(Drone):
         # Define starting point on the grid (this is just grid center)
         #grid_start = (-north_offset, -east_offset)
         # DONE: convert start position to current position rather than map center
+        #grid_start = (int(local_position[0]), int(local_position[1]))
         grid_start = (int(local_position[0]), int(local_position[1]))
+        northstart = int(local_position[0])
+        eaststart = int(local_position[1])
+        
         print("grid start", grid_start)
         # Set goal as some arbitrary position on the grid
-        grid_goal= (300, 300)
-        #grid_goal = (-north_offset + 10, -east_offset + 10)
+        #grid_goal = (-north_offset + , -east_offset + 10)
         # TODO: adapt to set goal as latitude / longitude position and convert
         #######################################
-        # minimum and maximum north coordinates based on map data
-        #xmin = np.floor(np.min(data[:, 0] - data[:, 3]))
-        #xmax = np.ceil(np.max(data[:, 0] + data[:, 3]))
-        # minimum and maximum east coordinates based on map data
-        #ymin = np.floor(np.min(data[:, 1] - data[:, 4]))
-        #ymax = np.ceil(np.max(data[:, 1] + data[:, 4]))
         
-        #xgoal = np.random.uniform(xmin, xmax, 1)
-        #ygoal = np.random.uniform(ymin, ymax, 1)
-        #######################################
-        #goal_global = [50, 81, TARGET_ALTITUDE]
+        goal_global = [40.793, 82.3977, 0]
         
-        #goal_local = global_to_local(goal_global, global_home)
-        #grid_goal = (goal_local[0], goal_local[1])
+        goal_local = global_to_local(goal_global, self.global_home)
+        grid_goal = (int(goal_local[0])-north_offset, int(goal_local[1])-east_offset)
         print("grid goal", grid_goal)
         
         # Run A* to find a path from start to goal
